@@ -17,10 +17,11 @@
         <option th:each="valute:${valutes}"
                 th:utext="${valute.charCode}"/>
     </select>
-    <div th:utext="${sum}"></div>
+
 
     <input type="submit" value="Конвертировать"></p>
-
+    <div>Результат:</div>
+    <div th:text="${sum}"></div>
 
 </form>
 <br><br>

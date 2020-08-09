@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,9 +43,13 @@ public class ConverterController {
         this.helper = helper;
     }
 
+    @GetMapping("/")
+    public String rootMain(){
+        return "redirect:/main";
+    }
+
     @GetMapping("/main")
     public String main(Model model, HttpServletRequest request) {
-
         if ((valueService.findMaxDate() == null) || (!valueService.findMaxDate().isEqual(LocalDate.now()))){
             Map<Valute, Value> valuteValueMap = domValute.getAllValuteAndValueFromXml();
             helper.recordValuteAndValue(valuteValueMap);
@@ -54,32 +59,36 @@ public class ConverterController {
         String username = request.getUserPrincipal().getName();
         List<Record> records = recordService.findAllByUser(userService.findByUsername(username));
         model.addAttribute("records", records);
+        if (model.getAttribute("sum") == null){
+            model.addAttribute("sum", 0.0);
+        }
+
         return "main";
     }
 
     @PostMapping("/convert")
     public String convert(@RequestParam String from, @RequestParam String to, @RequestParam String qty, Model model, HttpServletRequest request){
-        /*int qtyInt;
-        try{
-            qtyInt = Integer.parseInt(qty);
-        }catch (NumberFormatException ex){
-            throw new NumberFormatException("");
-        }
-        model.addAttribute("qty", qtyInt);*/
         Record record = helper.convert(from, to, Integer.parseInt(qty));
         String username = request.getUserPrincipal().getName();
         record.setUser(userService.findByUsername(username));
         recordService.save(record);
-        //List<Record> records = recordService.findAll();
-        //model.addAttribute("records", records);
-        return "redirect:/main";
+        List<Valute> valutes = valuteService.findAll();
+        model.addAttribute("valutes", valutes);
+        List<Record> records = recordService.findAllByUser(userService.findByUsername(username));
+        model.addAttribute("records", records);
+        model.addAttribute("sum", record.getSum());
+        return "main";
     }
 
     @GetMapping("/find")
     public String findByParams(@RequestParam String from, @RequestParam String to, @RequestParam String calendar, Model model){
-
-
-        return "redirect:/main";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(calendar, formatter);
+        List<Valute> valutes = valuteService.findAll();
+        model.addAttribute("valutes", valutes);
+        List<Record> records = recordService.findByParams(date, valuteService.findByCharCode(from), valuteService.findByCharCode(to));
+        model.addAttribute("records", records);
+        return "/main";
     }
 
 }
