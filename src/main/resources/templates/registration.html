@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <title>Конвертер валют</title>
+</head>
+<body>
+
+<p th:text="${message}" />
+Добавить нового пользователя
+<form th:action="@{/registration}" method="post">
+    <div><label> <input type="text" name="username" placeholder = "Логин" align="middle"/> </label></div>
+    <div><label> <input type="password" name="password" placeholder = "Пароль" align="middle"/> </label></div>
+    <div><input type="submit" align="middle" value="Войти"/></div>
+</form>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Конвертер</title>
+    <h1 align="middle">Конвертер</h1>
+</head>
+<body>
+<form th:action="@{/convert}" method="post">
+
+    <select name="from">
+        <option th:each="valute:${valutes}"
+                th:utext="${valute.charCode}"/>
+    </select>
+    <input type="text" name="qty">
+    <select name="to">
+        <option th:each="valute:${valutes}"
+                th:utext="${valute.charCode}"/>
+    </select>
+    <div th:utext="${sum}"></div>
+
+    <input type="submit" value="Конвертировать"></p>
+
+
+</form>
+<br><br>
+<h3>История</h3>
+<form th:action="@{/find}" method="get">
+    <p>Выберите дату: <input type="date" name="calendar">
+        <select name="from">
+            <option th:each="valute:${valutes}"
+                    th:utext="${valute.charCode}"/>
+        </select>
+        <select name="to">
+            <option th:each="valute:${valutes}"
+                    th:utext="${valute.charCode}"/>
+        </select>
+        <input type="submit" value="send"></p>
+
+</form>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th> Исходная валюта </th>
+        <th> Целевая валюта </th>
+        <th> Исходная сумма </th>
+        <th> Получаемая сумма </th>
+        <th> Дата </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:if="${records.empty}">
+        <td colspan="2"> Конвертаций не было </td>
+    </tr>
+    <tr th:each="record : ${records}">
+        <td><span th:text="${record.fromValute.charCode}"> Исходная валюта </span></td>
+        <td><span th:text="${record.toValute.charCode}"> Целевая валюта </span></td>
+        <td><span th:text="${record.qty}"> Исходная сумма </span></td>
+        <td><span th:text="${record.sum}"> Получаемая сумма </span></td>
+        <td><span th:text="${record.date}"> Дата </span></td>
+
+    </tr>
+    </tbody>
+</table>
+
+<style>
+    body {
+        background-color: #dddddd
+    }
+    select {
+        width: 70px;
+        height: 25px;
+    }
+</style>
+</body>
+</html>
