@@ -25,6 +25,11 @@ public class DomValute {
     private DocumentBuilderFactory factory;
     private DocumentBuilder builder;
 
+    @org.springframework.beans.factory.annotation.Value("${URL_CB}")
+    private String url;
+    @org.springframework.beans.factory.annotation.Value("${URL_CB_BY_DATE}")
+    private String urlByDate;
+
     public DomValute() {
         createBuilder();
     }
@@ -32,7 +37,7 @@ public class DomValute {
     public LocalDate getDateFromXml(){
         Document document = null;
         try {
-            document = builder.parse("http://www.cbr.ru/scripts/XML_daily.asp");
+            document = builder.parse(url);
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -50,7 +55,7 @@ public class DomValute {
         DateTimeFormatter formatter;
         try {
             formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            document = builder.parse("http://www.cbr.ru/scripts/XML_daily.asp?date_req=" + LocalDate.now().format(formatter));
+            document = builder.parse(urlByDate + LocalDate.now().format(formatter));
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (IOException e) {
