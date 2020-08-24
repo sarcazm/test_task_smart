@@ -1,5 +1,6 @@
 package converter.helper;
 
+import converter.dom.DomValute;
 import converter.model.Record;
 import converter.model.User;
 import converter.model.Value;
@@ -21,11 +22,13 @@ public class Helper {
 
     private final ValuteService valuteService;
     private final ValueService valueService;
+    private final DomValute domValute;
 
     @Autowired
-    public Helper(ValuteService valuteService, ValueService valueService) {
+    public Helper(ValuteService valuteService, ValueService valueService, DomValute domValute) {
         this.valuteService = valuteService;
         this.valueService = valueService;
+        this.domValute = domValute;
     }
 
     public void recordValuteAndValue(Map<Valute, Value> map){
@@ -36,13 +39,15 @@ public class Helper {
             valueService.add(value);
             valuteService.add(valute);
         }
+        boolean isDate = false;
         for (Map.Entry<Valute, Value> entry : map.entrySet()) {
             Valute valute = valuteService.findByCharCode(entry.getKey().getCharCode());
             Value value = entry.getValue();
             if (valute == null){
                 valute = valuteService.add(entry.getKey());
             }
-            if (!valueService.findMaxDate().isEqual(value.getDate())){
+            if (isDate || !valueService.findMaxDate().isEqual(value.getDate())){
+                isDate = true;
                 value.setValute(valute);
                 valueService.add(value);
             }
@@ -56,12 +61,8 @@ public class Helper {
 
         DecimalFormat decimalFormat = new DecimalFormat("#.###");
         Double sum;
-        LocalDate date;
-        if (LocalDate.now().getDayOfWeek().getValue() == 7){
-            date = LocalDate.now().minusDays(1);
-        }else {
-            date = LocalDate.now();
-        }
+        LocalDate date = domValute.getDateFromXml();
+
         Value fromValue = valueService.findByDateAndValute(date, fromValute);
         Value toValue = valueService.findByDateAndValute(date, toValute);
         if (fromValute.getCharCode().equals("RUB")){
